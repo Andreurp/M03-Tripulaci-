@@ -9,18 +9,17 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.65" fx:controller="net.andreu.tripulacio.SampleController">
+<BorderPane xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.andreu.tripulacio.SampleController">
    <center>
       <Pane prefHeight="452.0" prefWidth="625.0" BorderPane.alignment="CENTER">
          <children>
-            <ComboBox fx:id="cbVaixells" layoutX="185.0" layoutY="49.0" onAction="#carregarDades" prefHeight="34.0" prefWidth="256.0" promptText="Tria Vaixell" />
-            <Label layoutX="36.0" layoutY="145.0" prefHeight="23.0" prefWidth="48.0" text="Capita">
+            <ComboBox fx:id="cbVaixells" layoutX="185.0" layoutY="49.0" prefHeight="34.0" prefWidth="256.0" promptText="Tria Vaixell" />
+            <Label layoutX="36.0" layoutY="179.0" prefHeight="23.0" prefWidth="48.0" text="Capita">
                <font>
                   <Font size="15.0" />
                </font>
             </Label>
-            <Label fx:id="lblCapita" layoutX="104.0" layoutY="145.0" prefHeight="27.0" prefWidth="155.0">
+            <Label fx:id="lblCapita" layoutX="102.0" layoutY="177.0" prefHeight="27.0" prefWidth="155.0">
                <font>
                   <Font size="15.0" />
                </font>
@@ -37,12 +36,13 @@
                </font>
             </Label>
             <ListView fx:id="lvCaps" layoutX="280.0" layoutY="235.0" prefHeight="200.0" prefWidth="200.0" />
-            <Button fx:id="btnImporta" layoutX="441.0" layoutY="105.0" mnemonicParsing="false" onMouseClicked="#importa" prefHeight="33.0" prefWidth="160.0" text="Importar Fitxer" />
-            <CheckBox fx:id="cbxNavegar" layoutX="445.0" layoutY="172.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="153.0" text="Pot Navegar">
+            <Button fx:id="btnImporta" layoutX="412.0" layoutY="105.0" mnemonicParsing="false" onMouseClicked="#importa" prefHeight="33.0" prefWidth="189.0" text="Importar la tripulacio d'un fitxer" />
+            <CheckBox fx:id="cbxNavegar" layoutX="488.0" layoutY="277.0" mnemonicParsing="false" prefHeight="29.0" prefWidth="153.0" text="Pot Navegar">
                <font>
-                  <Font size="20.0" />
+                  <Font size="17.0" />
                </font>
             </CheckBox>
+            <Button fx:id="btngenera" layoutX="414.0" layoutY="158.0" mnemonicParsing="false" onMouseClicked="#generar" prefHeight="29.0" prefWidth="185.0" text="Generar trpulació aleatoriament" />
          </children>
       </Pane>
    </center>
