@@ -142,13 +142,14 @@ public class SampleController implements Initializable{
 			"The Vile Cutlass" };
 	private String[] rang = {"capita","mariner","cap de colla"};
 	private Random r = new Random();
+	
 	private EntityManagerFactory emf = Persistence.createEntityManagerFactory("tripulacio");
 	private EntityManager e = emf.createEntityManager();
 	private List<Vaixell> llistaVaixells;
 	
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		genera();
-		TypedQuery<Vaixell> consulta=e.createQuery("SELECT * FROM vaixell",Vaixell.class);
+		TypedQuery<Vaixell> consulta=e.createQuery("SELECT nom FROM vaixell", Vaixell.class);
 		llistaVaixells=consulta.getResultList();
 		for(int i=0; i<llistaVaixells.size(); i++){
 			cbVaixells.getItems().addAll(llistaVaixells.get(i).getNom());
