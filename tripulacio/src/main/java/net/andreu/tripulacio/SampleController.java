@@ -4,7 +4,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -208,11 +212,16 @@ public class SampleController implements Initializable{
 	
 	// Event Listener on Button[#btnImporta].onMouseClicked
 	@FXML
-	public void importa(MouseEvent event) {
+	public void importa(MouseEvent event) throws IOException {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.getExtensionFilters().addAll(new ExtensionFilter("TXT Files", "*.txt"));
 
 		File selectedFile = fileChooser.showOpenDialog(null);
+		BufferedReader br = new BufferedReader(new FileReader(selectedFile));
 
+		String linia = br.readLine();
+		while (linia != null){
+			
+		}
 	}
 }
