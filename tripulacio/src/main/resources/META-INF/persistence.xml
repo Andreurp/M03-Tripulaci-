@@ -5,7 +5,7 @@
 	<persistence-unit name="tripulacio">
 		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
 
-		<class>net.andreu.tripulacio.Vaixell</class>
+		 <class>net.andreu.tripulacio.Vaixell</class>
 		<class>net.andreu.tripulacio.Tripulant</class>
 		
 		<properties>
