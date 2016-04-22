@@ -1,24 +1,23 @@
 package net.andreu.tripulacio;
 
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
+
 import javafx.scene.control.Button;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.ResourceBundle;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.TypedQuery;
 
+import javafx.event.ActionEvent;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ComboBox;
@@ -27,7 +26,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.scene.control.CheckBox;
 
-public class SampleController implements Initializable{
+public class SampleController {
 	@FXML
 	private ComboBox<String> cbVaixells;
 	@FXML
@@ -39,9 +38,9 @@ public class SampleController implements Initializable{
 	@FXML
 	private Button btnImporta;
 	@FXML
-	private Button btngenera;
-	@FXML
 	private CheckBox cbxNavegar;
+	@FXML
+	private Button btngenera;
 	
 	private String[] noms = { "Yuonne Juckett", "Wanetta Crabill", "Alix Sorrell", "Krysta Fan", "Etsuko Mcveigh",
 			"Noemi Burch", "Travis Turrentine", "Penelope Caison", "Irmgard Waggener", "Nam Dustin", "Cher Minelli",
@@ -148,66 +147,25 @@ public class SampleController implements Initializable{
 	
 	private EntityManagerFactory emf = Persistence.createEntityManagerFactory("tripulacio");
 	private EntityManager e = emf.createEntityManager();
-	private List<Vaixell> llistaVaixells=new ArrayList<Vaixell>();
+	//private List<Vaixell> llistaVaixells=new ArrayList<Vaixell>();
 	
 	int posicio=0;
 	int tripulants=0;
 	
-	public void initialize(URL arg0, ResourceBundle arg1) {
-		
-		for(int i=0; i<100;i++){
-			//crear vaixell
-			posicio=r.nextInt(vaixells.length);
-			Vaixell v = new Vaixell(vaixells[posicio]);
-			llistaVaixells.add(v);
-		}
-		for(int i=0; i<llistaVaixells.size(); i++){
-			cbVaixells.getItems().addAll(llistaVaixells.get(i).getNom());
-		}
-	}
-	
-	// Event Listener on Button.onMouseClicked
+	// Event Listener on Button[#btngenera].onMouseClicked
 	@FXML
 	public void generar(MouseEvent event) {
-		lblCapita.setText(" ");
-		lvMariners.getItems().clear();
-		lvCaps.getItems().clear();
-		cbxNavegar.setSelected(false);
+		btngenera.setDisable(true);
+		btnImporta.setDisable(true);
 		
-		// Crear vaixell
-		Vaixell vaixellSeleccionat = new Vaixell(cbVaixells.getValue());
-		// Crear un ArrayList de tripulants
-		ArrayList<Tripulant> personal = new ArrayList<>();
-		tripulants=r.nextInt(8)+3;
-		boolean hihaCapita=false;
-		for(int i=0; i<tripulants; i++){
-			
-			Tripulant t = new Tripulant();
-			t.setNom(noms[r.nextInt(noms.length)]);
-			do{
-				t.setRang(rang[r.nextInt(rang.length)]);
-			}while(hihaCapita==true && t.getRang().equals("capita"));
-			
-			if(t.getRang().equals("capita")){
-				hihaCapita=true;
-				lblCapita.setText(t.getNom());
-			}else if(t.getRang().equals("mariner")){
-				lvMariners.getItems().add(t.getNom());
-			}else if(t.getRang().equals("cap de colla")){
-				lvCaps.getItems().add(t.getNom());
-			}
-			personal.add(t);
-		}
-		vaixellSeleccionat.setTripulants(personal);
-		// persist
-		e.getTransaction().begin();
-		e.persist(vaixellSeleccionat);
-		e.getTransaction().commit();
+		parsistirDades();
 		
-		if(hihaCapita && lvMariners.getItems().size()>=1 && lvCaps.getItems().size()>=1){
-			cbxNavegar.setSelected(true);
-		}
-
+		TypedQuery<Vaixell> v = e.createQuery("SELECT v FROM Vaixell v", Vaixell.class);
+		List<Vaixell> llistaVaixells = v.getResultList();
+		
+		for(int i=0;i<llistaVaixells.size();i++){
+			cbVaixells.getItems().add(llistaVaixells.get(i).getNom());
+        }
 	}
 	
 	// Event Listener on Button[#btnImporta].onMouseClicked
@@ -221,7 +179,69 @@ public class SampleController implements Initializable{
 
 		String linia = br.readLine();
 		while (linia != null){
+			btngenera.setDisable(true);
+			btnImporta.setDisable(true);
+			
 			
 		}
+	}
+	
+	private void parsistirDades() {
+		for(int i=0; i<100;i++){
+			//crear vaixell
+			posicio=r.nextInt(vaixells.length);
+			Vaixell v = new Vaixell();
+			v.setNom(vaixells[posicio]);
+			//llistaVaixells.add(v);
+			
+			// Crear un ArrayList de tripulants
+			ArrayList<Tripulant> personal = new ArrayList<>();
+			tripulants=r.nextInt(8)+3;
+			boolean hihaCapita=false;
+			
+			for(int j=0; j<tripulants; j++){
+				
+				Tripulant t = new Tripulant();
+				t.setNom(noms[r.nextInt(noms.length)]);
+				do{
+					t.setRang(rang[r.nextInt(rang.length)]);
+				}while(hihaCapita==true && t.getRang().equals("capita"));
+				
+				if(t.getRang().equals("capita")){
+					hihaCapita=true;
+				}
+				personal.add(t);
+			}
+			v.setTripulants(personal);
+			// persist
+			e.getTransaction().begin();
+			e.persist(v);
+			e.getTransaction().commit();
+		}
+	}
+	
+	// Event Listener on ComboBox[#cbVaixells].onAction
+	@FXML
+	public void mostrarDades(ActionEvent event) {
+		
+		TypedQuery<Vaixell> v = e.createQuery("SELECT v FROM Vaixell v WHERE v.nom=?1", Vaixell.class);
+		v.setParameter(1, cbVaixells.getValue());
+		Vaixell vaixellSelecionat = v.getSingleResult();
+		Integer matricula = vaixellSelecionat.getMatricula();
+
+		TypedQuery<Tripulant> t = e.createQuery("SELECT t FROM Tripulant t WHERE t.VAIXELL_ID = ?1", Tripulant.class);
+		t.setParameter(1, matricula);
+		List<Tripulant> tripulacioVaixell = t.getResultList();
+		
+		/**
+		 * if(t.getRang().equals("capita")){
+				hihaCapita=true;
+				lblCapita.setText(t.getNom());
+			}else if(t.getRang().equals("mariner")){
+				lvMariners.getItems().add(t.getNom());
+			}else if(t.getRang().equals("cap de colla")){
+				lvCaps.getItems().add(t.getNom());
+			}
+		 */
 	}
 }

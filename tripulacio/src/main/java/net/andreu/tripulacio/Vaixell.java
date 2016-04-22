@@ -25,9 +25,6 @@ public class Vaixell {
 	public Vaixell(){
 		super();
 	}
-	public Vaixell(String nom){
-		this.nom=nom;
-	}
 
 	public int getMatricula() {
 		return matricula;

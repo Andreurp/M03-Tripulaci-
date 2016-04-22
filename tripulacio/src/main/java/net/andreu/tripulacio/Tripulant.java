@@ -9,7 +9,7 @@ import javax.persistence.Id;
 public class Tripulant {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
-	private String dni;
+	private int dni;
 	private String nom;
 	private String rang;
 	
@@ -17,11 +17,11 @@ public class Tripulant {
 		super();
 	}
 
-	public String getDni() {
+	public int getDni() {
 		return dni;
 	}
 
-	public void setDni(String dni) {
+	public void setDni(int dni) {
 		this.dni = dni;
 	}
 
