@@ -166,6 +166,7 @@ public class SampleController {
 		for(int i=0;i<llistaVaixells.size();i++){
 			cbVaixells.getItems().add(llistaVaixells.get(i).getNom());
         }
+		cbVaixells.setValue("Triar vaixell");
 	}
 	
 	// Event Listener on Button[#btnImporta].onMouseClicked
@@ -224,14 +225,34 @@ public class SampleController {
 	@FXML
 	public void mostrarDades(ActionEvent event) {
 		
-		TypedQuery<Vaixell> v = e.createQuery("SELECT v FROM Vaixell v WHERE v.nom=?1", Vaixell.class);
-		v.setParameter(1, cbVaixells.getValue());
-		Vaixell vaixellSelecionat = v.getSingleResult();
-		Integer matricula = vaixellSelecionat.getMatricula();
+		if(cbVaixells.getValue()!="Triar vaixell"){
+			TypedQuery<Vaixell> v = e.createQuery("SELECT v FROM Vaixell v WHERE v.nom=?1", Vaixell.class);
+			v.setParameter(1, cbVaixells.getValue());
+			Vaixell vaixellSelecionat = v.getSingleResult();
+			Integer matricula = vaixellSelecionat.getMatricula();
 
-		TypedQuery<Tripulant> t = e.createQuery("SELECT t FROM Tripulant t WHERE t.VAIXELL_ID = ?1", Tripulant.class);
-		t.setParameter(1, matricula);
-		List<Tripulant> tripulacioVaixell = t.getResultList();
+			TypedQuery<Tripulant> t = e.createQuery("SELECT t FROM Tripulant t WHERE t.vaixell_id=?1", Tripulant.class);
+			t.setParameter(1, matricula);
+			List<Tripulant> tripulacioVaixell = t.getResultList();
+			
+			boolean esCapita=false;
+			
+			for (int i = 0; i < tripulacioVaixell.size(); i++){
+				if(esCapita=false){
+					if(tripulacioVaixell.get(i).getRang().equals("capita")){
+						lblCapita.setText(tripulacioVaixell.get(i).getNom());
+						esCapita=true;
+					}
+				}else if(tripulacioVaixell.get(i).getRang().equals("mariner")){
+					lvMariners.getItems().add(tripulacioVaixell.get(i).getNom());
+				}else if(tripulacioVaixell.get(i).getRang().equals("cap de colla")){
+					lvCaps.getItems().add(tripulacioVaixell.get(i).getNom());
+				}
+				if(esCapita && lvMariners.getItems().size()>=1 && lvCaps.getItems().size()>=1){
+					cbxNavegar.setSelected(true);
+				}
+			}
+		}
 		
 		/**
 		 * if(t.getRang().equals("capita")){
