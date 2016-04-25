@@ -9,6 +9,7 @@ public class Tripulant {
 	private int dni;
 	private String nom;
 	private String rang;
+	private Integer vaixell_id;
 	
 	public Tripulant(){
 		super();
@@ -38,6 +39,13 @@ public class Tripulant {
 		this.rang = rang;
 	}
 
+	public Integer getVaixell_id() {
+		return vaixell_id;
+	}
+
+	public void setVaixell_id(Integer vaixell_id) {
+		this.vaixell_id = vaixell_id;
+	}
 	
 	
 }

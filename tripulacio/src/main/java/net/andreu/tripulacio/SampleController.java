@@ -147,7 +147,6 @@ public class SampleController {
 	
 	private EntityManagerFactory emf = Persistence.createEntityManagerFactory("tripulacio");
 	private EntityManager e = emf.createEntityManager();
-	//private List<Vaixell> llistaVaixells=new ArrayList<Vaixell>();
 	
 	int posicio=0;
 	int tripulants=0;
@@ -161,21 +160,27 @@ public class SampleController {
 		genrar_parsistir_Dades_Aleatories();
 		
 		TypedQuery<Vaixell> v = e.createQuery("SELECT v FROM Vaixell v", Vaixell.class);
-		List<Vaixell> llistaVaixells = v.getResultList();
+		List<Vaixell> cbLlistaVaixells = v.getResultList();
 		
-		for(int i=0;i<llistaVaixells.size();i++){
-			cbVaixells.getItems().add(llistaVaixells.get(i).getNom());
+		for(int i=0;i<cbLlistaVaixells.size();i++){
+			cbVaixells.getItems().add(cbLlistaVaixells.get(i).getNom());
         }
 		cbVaixells.setValue("Triar vaixell");
 	}
 	
 	private void genrar_parsistir_Dades_Aleatories() {
+		List<Vaixell> tempLlistaVaixells=new ArrayList<Vaixell>();
 		for(int i=0; i<100;i++){
 			//crear vaixell
 			posicio=r.nextInt(vaixells.length);
 			Vaixell v = new Vaixell();
+			String tempNomVaixell;
+			
+			do{
+				tempNomVaixell=vaixells[posicio];
+			}while(tempLlistaVaixells.indexOf(tempNomVaixell)==1);
 			v.setNom(vaixells[posicio]);
-			//llistaVaixells.add(v);
+			tempLlistaVaixells.add(v);
 			
 			// Crear un ArrayList de tripulants
 			ArrayList<Tripulant> personal = new ArrayList<>();
@@ -209,6 +214,7 @@ public class SampleController {
 			e.persist(v);
 			e.getTransaction().commit();
 		}
+		//tempLlistaVaixells.clear();
 	}
 	
 	// Event Listener on Button[#btnImporta].onMouseClicked
@@ -234,6 +240,11 @@ public class SampleController {
 	public void mostrarDades(ActionEvent event) {
 		
 		if(cbVaixells.getValue()!="Triar vaixell"){
+			lblCapita.setText(" ");
+			lvMariners.getItems().clear();
+			lvCaps.getItems().clear();
+			cbxNavegar.setSelected(false);
+			
 			TypedQuery<Vaixell> v = e.createQuery("SELECT v FROM Vaixell v WHERE v.nom=?1", Vaixell.class);
 			v.setParameter(1, cbVaixells.getValue());
 			Vaixell vaixellSelecionat = v.getSingleResult();
@@ -246,11 +257,9 @@ public class SampleController {
 			boolean esCapita=false;
 			
 			for (int i = 0; i < tripulacioVaixell.size(); i++){
-				if(esCapita=false){
-					if(tripulacioVaixell.get(i).getRang().equals("capita")){
-						lblCapita.setText(tripulacioVaixell.get(i).getNom());
-						esCapita=true;
-					}
+				if(esCapita==false && tripulacioVaixell.get(i).getRang().equals("capita")){
+					lblCapita.setText(tripulacioVaixell.get(i).getNom());
+					esCapita=true;
 				}else if(tripulacioVaixell.get(i).getRang().equals("mariner")){
 					lvMariners.getItems().add(tripulacioVaixell.get(i).getNom());
 				}else if(tripulacioVaixell.get(i).getRang().equals("cap de colla")){
