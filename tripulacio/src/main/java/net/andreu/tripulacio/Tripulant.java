@@ -1,14 +1,11 @@
 package net.andreu.tripulacio;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
 public class Tripulant {
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int dni;
 	private String nom;
 	private String rang;

@@ -158,7 +158,7 @@ public class SampleController {
 		btngenera.setDisable(true);
 		btnImporta.setDisable(true);
 		
-		parsistirDades();
+		genrar_parsistir_Dades_Aleatories();
 		
 		TypedQuery<Vaixell> v = e.createQuery("SELECT v FROM Vaixell v", Vaixell.class);
 		List<Vaixell> llistaVaixells = v.getResultList();
@@ -167,6 +167,48 @@ public class SampleController {
 			cbVaixells.getItems().add(llistaVaixells.get(i).getNom());
         }
 		cbVaixells.setValue("Triar vaixell");
+	}
+	
+	private void genrar_parsistir_Dades_Aleatories() {
+		for(int i=0; i<100;i++){
+			//crear vaixell
+			posicio=r.nextInt(vaixells.length);
+			Vaixell v = new Vaixell();
+			v.setNom(vaixells[posicio]);
+			//llistaVaixells.add(v);
+			
+			// Crear un ArrayList de tripulants
+			ArrayList<Tripulant> personal = new ArrayList<>();
+			tripulants=r.nextInt(8)+3;
+			boolean hihaCapita=false;
+			
+			for(int j=0; j<tripulants; j++){
+				
+				Tripulant t = new Tripulant();
+				t.setNom(noms[r.nextInt(noms.length)]);
+				int dni;
+				
+				do{
+					dni=r.nextInt(99999999-10000000)+10000000;
+				}while(personal.indexOf(dni)==1);
+				t.setDni(dni);
+				
+				do{
+					t.setRang(rang[r.nextInt(rang.length)]);
+				}while(hihaCapita==true && t.getRang().equals("capita"));
+				
+				if(t.getRang().equals("capita")){
+					hihaCapita=true;
+				}
+				personal.add(t);
+			}
+			v.setTripulants(personal);
+			
+			// persist
+			e.getTransaction().begin();
+			e.persist(v);
+			e.getTransaction().commit();
+		}
 	}
 	
 	// Event Listener on Button[#btnImporta].onMouseClicked
@@ -184,40 +226,6 @@ public class SampleController {
 			btnImporta.setDisable(true);
 			
 			
-		}
-	}
-	
-	private void parsistirDades() {
-		for(int i=0; i<100;i++){
-			//crear vaixell
-			posicio=r.nextInt(vaixells.length);
-			Vaixell v = new Vaixell();
-			v.setNom(vaixells[posicio]);
-			//llistaVaixells.add(v);
-			
-			// Crear un ArrayList de tripulants
-			ArrayList<Tripulant> personal = new ArrayList<>();
-			tripulants=r.nextInt(8)+3;
-			boolean hihaCapita=false;
-			
-			for(int j=0; j<tripulants; j++){
-				
-				Tripulant t = new Tripulant();
-				t.setNom(noms[r.nextInt(noms.length)]);
-				do{
-					t.setRang(rang[r.nextInt(rang.length)]);
-				}while(hihaCapita==true && t.getRang().equals("capita"));
-				
-				if(t.getRang().equals("capita")){
-					hihaCapita=true;
-				}
-				personal.add(t);
-			}
-			v.setTripulants(personal);
-			// persist
-			e.getTransaction().begin();
-			e.persist(v);
-			e.getTransaction().commit();
 		}
 	}
 	
@@ -253,16 +261,5 @@ public class SampleController {
 				}
 			}
 		}
-		
-		/**
-		 * if(t.getRang().equals("capita")){
-				hihaCapita=true;
-				lblCapita.setText(t.getNom());
-			}else if(t.getRang().equals("mariner")){
-				lvMariners.getItems().add(t.getNom());
-			}else if(t.getRang().equals("cap de colla")){
-				lvCaps.getItems().add(t.getNom());
-			}
-		 */
 	}
 }
