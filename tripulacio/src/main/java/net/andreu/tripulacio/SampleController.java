@@ -41,7 +41,7 @@ public class SampleController {
 	private CheckBox cbxNavegar;
 	@FXML
 	private Button btngenera;
-	
+
 	private String[] noms = { "Yuonne Juckett", "Wanetta Crabill", "Alix Sorrell", "Krysta Fan", "Etsuko Mcveigh",
 			"Noemi Burch", "Travis Turrentine", "Penelope Caison", "Irmgard Waggener", "Nam Dustin", "Cher Minelli",
 			"Alexandra Kile", "Carrol Kalina", "Caitlin Vann", "Jerrold Harding", "Coreen Ikner", "Fatima Deel",
@@ -142,81 +142,88 @@ public class SampleController {
 			"The Damned Raider", "The Deciet of the Eel", "The Doom of the South", "The Fallen Hangman",
 			"The Gold Howl", "The Greed of the Manta", "The Hate of Hades", "The Madness of the Wolf",
 			"The Vile Cutlass" };
-	private String[] rang = {"capita","mariner","cap de colla"};
+	private String[] rang = { "capita", "mariner", "cap de colla" };
 	private Random r = new Random();
-	
+
 	private EntityManagerFactory emf = Persistence.createEntityManagerFactory("tripulacio");
 	private EntityManager e = emf.createEntityManager();
-	
-	int posicio=0;
-	int tripulants=0;
-	
+
+	int posicio = 0;
+	int tripulants = 0;
+
 	// Event Listener on Button[#btngenera].onMouseClicked
 	@FXML
 	public void generar(MouseEvent event) {
 		btngenera.setDisable(true);
 		btnImporta.setDisable(true);
-		
+
 		genrar_parsistir_Dades_Aleatories();
-		
-		TypedQuery<Vaixell> v = e.createQuery("SELECT v FROM Vaixell v", Vaixell.class);
+		omple_cbVaixells();
+	}
+
+	private void omple_cbVaixells() {
+		TypedQuery<Vaixell> v = e.createQuery("SELECT v FROM Vaixell v ORDER BY v.nom", Vaixell.class);
 		List<Vaixell> cbLlistaVaixells = v.getResultList();
-		
-		for(int i=0;i<cbLlistaVaixells.size();i++){
+
+		for (int i = 0; i < cbLlistaVaixells.size(); i++) {
 			cbVaixells.getItems().add(cbLlistaVaixells.get(i).getNom());
-        }
+		}
 		cbVaixells.setValue("Triar vaixell");
 	}
-	
+
 	private void genrar_parsistir_Dades_Aleatories() {
-		List<Vaixell> tempLlistaVaixells=new ArrayList<Vaixell>();
-		for(int i=0; i<100;i++){
-			//crear vaixell
-			posicio=r.nextInt(vaixells.length);
+		List<String> tempLlistaVaixells = new ArrayList<String>();
+		String tempNomVaixell;
+
+		for (int i = 0; i < 100; i++) {
+			// crear vaixell
+
 			Vaixell v = new Vaixell();
-			String tempNomVaixell;
-			
-			do{
-				tempNomVaixell=vaixells[posicio];
-			}while(tempLlistaVaixells.indexOf(tempNomVaixell)==1);
-			v.setNom(vaixells[posicio]);
-			tempLlistaVaixells.add(v);
-			
+
+			do {
+				posicio = r.nextInt(vaixells.length);
+				tempNomVaixell = vaixells[posicio];
+			} while (tempLlistaVaixells.contains(tempNomVaixell));
+			tempLlistaVaixells.add(tempNomVaixell);
+			v.setNom(tempNomVaixell);
+
 			// Crear un ArrayList de tripulants
 			ArrayList<Tripulant> personal = new ArrayList<>();
-			tripulants=r.nextInt(8)+3;
-			boolean hihaCapita=false;
-			
-			for(int j=0; j<tripulants; j++){
-				
+			ArrayList<Integer> tempDNI = new ArrayList<>();
+			tripulants = r.nextInt(8) + 3;
+			boolean hihaCapita = false;
+
+			for (int j = 0; j < tripulants; j++) {
+
 				Tripulant t = new Tripulant();
 				t.setNom(noms[r.nextInt(noms.length)]);
 				int dni;
-				
-				do{
-					dni=r.nextInt(99999999-10000000)+10000000;
-				}while(personal.indexOf(dni)==1);
+
+				do {
+					dni = r.nextInt(89999999) + 10000000;
+				} while (tempDNI.contains(dni));
+				tempDNI.add(dni);
 				t.setDni(dni);
-				
-				do{
+
+				do {
 					t.setRang(rang[r.nextInt(rang.length)]);
-				}while(hihaCapita==true && t.getRang().equals("capita"));
-				
-				if(t.getRang().equals("capita")){
-					hihaCapita=true;
+				} while (hihaCapita == true && t.getRang().equals("capita"));
+
+				if (t.getRang().equals("capita")) {
+					hihaCapita = true;
 				}
 				personal.add(t);
 			}
 			v.setTripulants(personal);
-			
+
 			// persist
 			e.getTransaction().begin();
 			e.persist(v);
 			e.getTransaction().commit();
 		}
-		//tempLlistaVaixells.clear();
+		// tempLlistaVaixells.clear();
 	}
-	
+
 	// Event Listener on Button[#btnImporta].onMouseClicked
 	@FXML
 	public void importa(MouseEvent event) throws IOException {
@@ -226,25 +233,60 @@ public class SampleController {
 		File selectedFile = fileChooser.showOpenDialog(null);
 		BufferedReader br = new BufferedReader(new FileReader(selectedFile));
 
-		String linia = br.readLine();
-		while (linia != null){
-			btngenera.setDisable(true);
-			btnImporta.setDisable(true);
-			
-			
+		String linia;
+		String[] entrada;
+		Vaixell v = null;
+		Tripulant t;
+		ArrayList<Tripulant> personal = new ArrayList<>();
+
+		while ((linia = br.readLine()) != null) {
+			entrada = linia.split(",");
+			if (entrada.length == 3) {
+				if (entrada[2].trim().equals("vaixell")) {
+					if (v != null) {
+						v.setTripulants(personal);
+						// persist
+						e.getTransaction().begin();
+						e.persist(v);
+						e.getTransaction().commit();
+					}
+					personal = new ArrayList<>();
+					v = new Vaixell();
+					v.setNom(entrada[0].trim());
+					v.setMatricula(Integer.parseInt(entrada[1].trim()));
+				} else {
+					t = new Tripulant();
+					t.setNom(entrada[0].trim());
+					t.setDni(Integer.parseInt(entrada[1].trim()));
+					t.setRang(entrada[2].trim());
+					personal.add(t);
+				}
+			}
 		}
+		if (v != null) {
+			v.setTripulants(personal);
+			// persist
+			e.getTransaction().begin();
+			e.persist(v);
+			e.getTransaction().commit();
+		}
+		br.close();
+		omple_cbVaixells();
+		/*
+		 * btngenera.setDisable(true); btnImporta.setDisable(true);
+		 */
 	}
-	
+
 	// Event Listener on ComboBox[#cbVaixells].onAction
 	@FXML
 	public void mostrarDades(ActionEvent event) {
-		
-		if(cbVaixells.getValue()!="Triar vaixell"){
+
+		if (cbVaixells.getValue() != "Triar vaixell") {
 			lblCapita.setText(" ");
 			lvMariners.getItems().clear();
 			lvCaps.getItems().clear();
 			cbxNavegar.setSelected(false);
-			
+
 			TypedQuery<Vaixell> v = e.createQuery("SELECT v FROM Vaixell v WHERE v.nom=?1", Vaixell.class);
 			v.setParameter(1, cbVaixells.getValue());
 			Vaixell vaixellSelecionat = v.getSingleResult();
@@ -253,19 +295,19 @@ public class SampleController {
 			TypedQuery<Tripulant> t = e.createQuery("SELECT t FROM Tripulant t WHERE t.vaixell_id=?1", Tripulant.class);
 			t.setParameter(1, matricula);
 			List<Tripulant> tripulacioVaixell = t.getResultList();
-			
-			boolean esCapita=false;
-			
-			for (int i = 0; i < tripulacioVaixell.size(); i++){
-				if(esCapita==false && tripulacioVaixell.get(i).getRang().equals("capita")){
+
+			boolean esCapita = false;
+
+			for (int i = 0; i < tripulacioVaixell.size(); i++) {
+				if (tripulacioVaixell.get(i).getRang().equals("capita")) {
 					lblCapita.setText(tripulacioVaixell.get(i).getNom());
-					esCapita=true;
-				}else if(tripulacioVaixell.get(i).getRang().equals("mariner")){
+					esCapita = true;
+				} else if (tripulacioVaixell.get(i).getRang().equals("mariner")) {
 					lvMariners.getItems().add(tripulacioVaixell.get(i).getNom());
-				}else if(tripulacioVaixell.get(i).getRang().equals("cap de colla")){
+				} else if (tripulacioVaixell.get(i).getRang().equals("cap de colla")) {
 					lvCaps.getItems().add(tripulacioVaixell.get(i).getNom());
 				}
-				if(esCapita && lvMariners.getItems().size()>=1 && lvCaps.getItems().size()>=1){
+				if (esCapita && lvMariners.getItems().size() >= 1 && lvCaps.getItems().size() >= 1) {
 					cbxNavegar.setSelected(true);
 				}
 			}
