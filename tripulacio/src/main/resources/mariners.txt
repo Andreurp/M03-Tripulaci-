@@ -1,0 +1,11 @@
+Reina de los mares, 12345, vaixell
+Manel Garcia, 190345, mariner
+Federico Boix Pessol, 15123546, mariner
+Marcel Puigpelat, 1235456, capita
+Perla negra, 15457, vaixell
+Andreu Rodriguez, 15486459, capita
+Papet, 15649872, mariner
+Perico, 45674658, cap de colla
+Titanic, 45984, vaixell
+Joan antoni, 45678654, mariner
+Pep, 48256489, cap de colla
