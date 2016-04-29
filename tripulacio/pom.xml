@@ -53,7 +53,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>net.andreu.tripulacio.App</mainClass>
+							<mainClass>net.andreu.tripulacio.Main</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
@@ -72,7 +72,7 @@
 							<transformers>
 								<transformer
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>net.andreu.tripulacio.App</mainClass>
+									<mainClass>net.andreu.tripulacio.Main</mainClass>
 								</transformer>
 							</transformers>
 						</configuration>
